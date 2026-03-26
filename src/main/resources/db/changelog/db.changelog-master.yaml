@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: 001-create-user-credentials-table.yaml
+      relativeToChangelogFile: true
