@@ -92,6 +92,15 @@ class AuthServiceTest {
   }
 
   @Test
+  void checkPassword_wrongPassword_returnsFalse() {
+    when(passwordEncoder.matches("wrong", "$2a$12$hashedpassword")).thenReturn(false);
+
+    boolean result = authService.checkPassword("wrong", "$2a$12$hashedpassword");
+
+    assertThat(result).isFalse();
+  }
+
+  @Test
   void findByUserId_success() {
     when(repository.findByUserId(100L)).thenReturn(Optional.of(credentials));
 
