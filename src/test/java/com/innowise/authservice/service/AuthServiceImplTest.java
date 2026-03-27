@@ -5,6 +5,7 @@ import com.innowise.authservice.entity.UserCredentials;
 import com.innowise.authservice.exception.DuplicateUsernameException;
 import com.innowise.authservice.exception.UserCredentialsNotFoundException;
 import com.innowise.authservice.repository.UserCredentialsRepository;
+import com.innowise.authservice.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class AuthServiceImplTest {
 
   @Mock
   private UserCredentialsRepository repository;
@@ -29,7 +30,7 @@ class AuthServiceTest {
   private PasswordEncoder passwordEncoder;
 
   @InjectMocks
-  private AuthService authService;
+  private AuthServiceImpl authService;
 
   private UserCredentials credentials;
 

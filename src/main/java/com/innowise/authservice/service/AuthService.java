@@ -1,48 +1,52 @@
 package com.innowise.authservice.service;
 
-import com.innowise.authservice.entity.UserCredentials;
 import com.innowise.authservice.entity.Role;
+import com.innowise.authservice.entity.UserCredentials;
 import com.innowise.authservice.exception.DuplicateUsernameException;
 import com.innowise.authservice.exception.UserCredentialsNotFoundException;
-import com.innowise.authservice.repository.UserCredentialsRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-public class AuthService {
+/**
+ * Service interface for authentication business logic.
+ * Handles credential storage, password verification and user lookup operations.
+ */
+public interface AuthService {
 
-  private final UserCredentialsRepository credentialsRepository;
-  private final PasswordEncoder passwordEncoder;
+  /**
+   * Saves user credentials (username, hashed password, role and linked user ID).
+   *
+   * @param username the username (usually email)
+   * @param rawPassword the plain text password (will be hashed)
+   * @param role the user's role (USER or ADMIN)
+   * @param userId the ID from the main user entity
+   * @return the saved UserCredentials entity
+   * @throws DuplicateUsernameException if username already exists
+   */
+  UserCredentials saveCredentials(String username, String rawPassword, Role role, Long userId);
 
-  @Transactional
-  public UserCredentials saveCredentials(String username, String rawPassword, Role role, Long userId) {
-    if (credentialsRepository.existsByUsername(username)) {
-      throw new DuplicateUsernameException("Username already exists: " + username);
-    }
+  /**
+   * Finds user credentials by username.
+   *
+   * @param username the username to search for
+   * @return the UserCredentials entity
+   * @throws UserCredentialsNotFoundException if no credentials found
+   */
+  UserCredentials findByUsername(String username);
 
-    UserCredentials credentials = new UserCredentials();
-    credentials.setUsername(username);
-    credentials.setPassword(passwordEncoder.encode(rawPassword));
-    credentials.setRole(role);
-    credentials.setUserId(userId);
+  /**
+   * Verifies if the provided raw password matches the stored hashed password.
+   *
+   * @param rawPassword the password to check
+   * @param encodedPassword the stored hashed password
+   * @return true if passwords match, false otherwise
+   */
+  boolean checkPassword(String rawPassword, String encodedPassword);
 
-    return credentialsRepository.save(credentials);
-  }
-
-  public UserCredentials findByUsername(String username) {
-    return credentialsRepository.findByUsername(username)
-            .orElseThrow(() -> new UserCredentialsNotFoundException("User not found: " + username));
-  }
-
-  public boolean checkPassword(String rawPassword, String encodedPassword) {
-    return passwordEncoder.matches(rawPassword, encodedPassword);
-  }
-
-  public UserCredentials findByUserId(Long userId) {
-    return credentialsRepository.findByUserId(userId)
-            .orElseThrow(() -> new UserCredentialsNotFoundException("Credentials not found for userId: " + userId));
-  }
+  /**
+   * Finds user credentials by user ID.
+   *
+   * @param userId the ID of the user
+   * @return the UserCredentials entity
+   * @throws UserCredentialsNotFoundException if no credentials found for this userId
+   */
+  UserCredentials findByUserId(Long userId);
 }
