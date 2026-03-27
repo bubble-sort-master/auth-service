@@ -4,6 +4,7 @@ import com.innowise.authservice.dto.*;
 import com.innowise.authservice.exception.BadCredentialsException;
 import com.innowise.authservice.exception.InvalidTokenException;
 import com.innowise.authservice.security.JwtTokenProvider;
+import com.innowise.authservice.service.AuthService;
 import com.innowise.authservice.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-  private final AuthServiceImpl authService;
+  private final AuthService authService;
   private final JwtTokenProvider jwtTokenProvider;
 
   /**
