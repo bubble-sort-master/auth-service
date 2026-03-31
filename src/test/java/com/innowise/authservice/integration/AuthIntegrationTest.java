@@ -12,7 +12,6 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
             {
               "username": "testuser@test.com",
               "password": "StrongPass123!",
-              "role": "USER",
               "userId": 100
             }
             """;
@@ -54,7 +53,6 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                 {
                   "username": "",
                   "password": "",
-                  "role": "USER",
                   "userId": 100
                 }
                 """;
@@ -209,5 +207,67 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
             .andExpect(jsonPath("$.title").value("Invalid Token"))
             .andExpect(jsonPath("$.detail").value("Invalid or expired refresh token"))
             .andExpect(jsonPath("$.status").value(401));
+  }
+
+  @Test
+  void registerAdmin_success_shouldCreateUserWithAdminRole() throws Exception {
+    String adminToken = createAccessToken(999L, "ADMIN");
+
+    String adminRegisterJson = """
+                {
+                  "username": "adminuser@test.com",
+                  "password": "AdminPass123!",
+                  "role": "ADMIN",
+                  "userId": 200
+                }
+                """;
+
+    mockMvc.perform(post("/auth/admin/register")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(adminRegisterJson))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  void registerAdmin_withoutAdminRole_shouldReturn403() throws Exception {
+    String userToken = createAccessToken(101L, "USER");
+
+    String adminRegisterJson = """
+                {
+                  "username": "hacker@test.com",
+                  "password": "HackPass123!",
+                  "role": "ADMIN",
+                  "userId": 300
+                }
+                """;
+
+    mockMvc.perform(post("/auth/admin/register")
+                    .header("Authorization", "Bearer " + userToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(adminRegisterJson))
+            .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void registerAdmin_invalidData_shouldReturn400() throws Exception {
+    String adminToken = createAccessToken(999L, "ADMIN");
+
+    String invalidJson = """
+                {
+                  "username": "",
+                  "password": "",
+                  "role": "ADMIN",
+                  "userId": 400
+                }
+                """;
+
+    mockMvc.perform(post("/auth/admin/register")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(invalidJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.title").value("Validation Failed"))
+            .andExpect(jsonPath("$.detail").value("One or more fields are invalid"));
   }
 }

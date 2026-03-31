@@ -1,6 +1,7 @@
 package com.innowise.authservice.controller;
 
 import com.innowise.authservice.dto.*;
+import com.innowise.authservice.entity.Role;
 import com.innowise.authservice.exception.BadCredentialsException;
 import com.innowise.authservice.exception.InvalidTokenException;
 import com.innowise.authservice.security.JwtTokenProvider;
@@ -8,6 +9,7 @@ import com.innowise.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,6 +33,18 @@ public class AuthController {
    */
   @PostMapping("/register")
   public ResponseEntity<Void> register(@Valid @RequestBody CredentialsRequest request) {
+    authService.saveCredentials(
+            request.username(),
+            request.password(),
+            Role.USER,
+            request.userId()
+    );
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/admin/register")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Void> registerAdmin(@Valid @RequestBody AdminCredentialsRequest request) {
     authService.saveCredentials(
             request.username(),
             request.password(),

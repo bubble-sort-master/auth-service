@@ -13,7 +13,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -47,5 +46,16 @@ public abstract class AbstractIntegrationTest {
     registry.add("spring.datasource.url", postgres::getJdbcUrl);
     registry.add("spring.datasource.username", postgres::getUsername);
     registry.add("spring.datasource.password", postgres::getPassword);
+  }
+
+  protected String createAccessToken(Long userId, String role) {
+    JwtClaimsSet claims = JwtClaimsSet.builder()
+            .subject(userId.toString())
+            .claim("role", role)
+            .claim("token_type", "access")
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
+            .build();
+    return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
   }
 }
