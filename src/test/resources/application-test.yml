@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: auth-service-test
+
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+jwt:
+  secret: ${JWT_SECRET:super-secret-key-at-least-32-characters-long-for-hmac-sha256}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
+
+logging:
+  level:
+    org.springframework.security: WARN
+    org.hibernate.SQL: ERROR
