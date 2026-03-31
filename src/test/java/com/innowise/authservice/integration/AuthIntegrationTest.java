@@ -163,9 +163,8 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
     mockMvc.perform(post("/auth/validate")
                     .contentType(MediaType.TEXT_PLAIN)
                     .content(""))
-            .andExpect(status().isInternalServerError())
-            .andExpect(jsonPath("$.title").value("Internal Server Error"))
-            .andExpect(jsonPath("$.detail").value("An unexpected error occurred"));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.valid").value(false));
   }
 
   @Test

@@ -20,6 +20,7 @@ public class JwtTokenProvider {
     JwtClaimsSet claims = JwtClaimsSet.builder()
             .subject(userId.toString())
             .claim("role", role.name())
+            .claim("token_type", "access")
             .issuedAt(Instant.now())
             .expiresAt(Instant.now().plusMillis(jwtConfig.getAccessTokenExpiration()))
             .build();
@@ -27,9 +28,11 @@ public class JwtTokenProvider {
     return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
   }
 
-  public String generateRefreshToken(Long userId) {
+  public String generateRefreshToken(Long userId, Role role) {
     JwtClaimsSet claims = JwtClaimsSet.builder()
             .subject(userId.toString())
+            .claim("role", role.name())
+            .claim("token_type", "refresh")
             .issuedAt(Instant.now())
             .expiresAt(Instant.now().plusMillis(jwtConfig.getRefreshTokenExpiration()))
             .build();
@@ -54,5 +57,23 @@ public class JwtTokenProvider {
   public String getRoleFromToken(String token) {
     Jwt jwt = jwtDecoder.decode(token);
     return jwt.getClaimAsString("role");
+  }
+
+  public boolean isAccessToken(String token) {
+    try {
+      Jwt jwt = jwtDecoder.decode(token);
+      return "access".equals(jwt.getClaimAsString("token_type"));
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public boolean isRefreshToken(String token) {
+    try {
+      Jwt jwt = jwtDecoder.decode(token);
+      return "refresh".equals(jwt.getClaimAsString("token_type"));
+    } catch (Exception e) {
+      return false;
+    }
   }
 }

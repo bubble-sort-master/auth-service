@@ -48,15 +48,4 @@ public abstract class AbstractIntegrationTest {
     registry.add("spring.datasource.username", postgres::getUsername);
     registry.add("spring.datasource.password", postgres::getPassword);
   }
-
-  private String createToken(Long userId, String role) {
-    JwtClaimsSet claims = JwtClaimsSet.builder()
-            .subject(userId.toString())
-            .claim("role", role)
-            .issuedAt(Instant.now())
-            .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
-            .build();
-
-    return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-  }
 }

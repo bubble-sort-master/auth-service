@@ -24,19 +24,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
-
     String header = request.getHeader("Authorization");
-
     if (header != null && header.startsWith("Bearer ")) {
       String token = header.substring(7).trim();
-
-      if (jwtTokenProvider.validateToken(token)) {
+      if (jwtTokenProvider.validateToken(token) && jwtTokenProvider.isAccessToken(token)) {
         try {
           Long userId = jwtTokenProvider.getUserIdFromToken(token);
           String role = jwtTokenProvider.getRoleFromToken(token);
-
           var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
-
           var authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
           SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
@@ -44,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
       }
     }
-
     filterChain.doFilter(request, response);
   }
 }

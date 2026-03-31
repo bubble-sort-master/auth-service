@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     String accessToken = jwtTokenProvider.generateAccessToken(credentials.getUserId(), credentials.getRole());
-    String refreshToken = jwtTokenProvider.generateRefreshToken(credentials.getUserId());
+    String refreshToken = jwtTokenProvider.generateRefreshToken(credentials.getUserId(), credentials.getRole());
 
     return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
   }
@@ -71,13 +71,12 @@ public class AuthController {
    */
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponse> refresh(@RequestHeader("X-Refresh-Token") String refreshToken) {
-    if (!jwtTokenProvider.validateToken(refreshToken)) {
+    if (!jwtTokenProvider.validateToken(refreshToken) || !jwtTokenProvider.isRefreshToken(refreshToken)) {
       throw new InvalidTokenException("Invalid or expired refresh token");
     }
 
     Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
     var credentials = authService.findByUserId(userId);
-
     String newAccessToken = jwtTokenProvider.generateAccessToken(userId, credentials.getRole());
 
     return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken));
@@ -90,14 +89,14 @@ public class AuthController {
    * @return validation result with userId and role if token is valid
    */
   @PostMapping("/validate")
-  public ResponseEntity<TokenValidationResponse> validate(@RequestBody String token) {
-    if (token == null || token.isBlank() || !jwtTokenProvider.validateToken(token)) {
+  public ResponseEntity<TokenValidationResponse> validate(@RequestBody(required = false) String token) {
+    if (token == null || token.isBlank() ||
+            !jwtTokenProvider.validateToken(token) ||
+            !jwtTokenProvider.isAccessToken(token)) {
       return ResponseEntity.ok(new TokenValidationResponse(false, null, null));
     }
-
     Long userId = jwtTokenProvider.getUserIdFromToken(token);
     String role = jwtTokenProvider.getRoleFromToken(token);
-
     return ResponseEntity.ok(new TokenValidationResponse(true, userId, role));
   }
 }
