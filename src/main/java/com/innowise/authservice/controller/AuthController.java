@@ -5,7 +5,6 @@ import com.innowise.authservice.exception.BadCredentialsException;
 import com.innowise.authservice.exception.InvalidTokenException;
 import com.innowise.authservice.security.JwtTokenProvider;
 import com.innowise.authservice.service.AuthService;
-import com.innowise.authservice.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +48,7 @@ public class AuthController {
    * @return access and refresh JWT tokens
    * @throws BadCredentialsException if credentials are invalid
    */
-  @PostMapping("/login")
+  @PostMapping("/token")
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
     var credentials = authService.findByUsername(request.username());
 

@@ -36,7 +36,7 @@ public class SecurityConfig {
             .cors(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/register", "/auth/login", "/auth/refresh", "/auth/validate").permitAll()
+                    .requestMatchers("/auth/register", "/auth/token", "/auth/refresh", "/auth/validate").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -60,7 +60,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean(JwtDecoder.class)
+  @ConditionalOnMissingBean(JwtEncoder.class)
   public JwtEncoder jwtEncoder() {
     SecretKeySpec secretKey = new SecretKeySpec(
             jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),

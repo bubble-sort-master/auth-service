@@ -76,7 +76,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                     .content(VALID_REGISTER_JSON))
             .andExpect(status().isOk());
 
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post("/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(VALID_LOGIN_JSON))
             .andExpect(status().isOk())
@@ -98,7 +98,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                 }
                 """;
 
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post("/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(wrongLogin))
             .andExpect(status().isUnauthorized())
@@ -116,7 +116,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                 }
                 """;
 
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post("/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(nonExistent))
             .andExpect(status().isUnauthorized())
@@ -132,7 +132,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                     .content(VALID_REGISTER_JSON))
             .andExpect(status().isOk());
 
-    var loginResult = mockMvc.perform(post("/auth/login")
+    var loginResult = mockMvc.perform(post("/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(VALID_LOGIN_JSON))
             .andExpect(status().isOk())
@@ -175,7 +175,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                     .content(VALID_REGISTER_JSON))
             .andExpect(status().isOk());
 
-    var loginResult = mockMvc.perform(post("/auth/login")
+    var loginResult = mockMvc.perform(post("/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(VALID_LOGIN_JSON))
             .andExpect(status().isOk())
