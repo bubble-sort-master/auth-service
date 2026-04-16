@@ -50,5 +50,12 @@ public interface AuthService {
    */
   UserCredentials findByUserId(Long userId);
 
+  /**
+   * Changes the password for a user identified by userId.
+   *
+   * @param userId         the ID of the user whose password should be changed
+   * @param rawNewPassword the new plain text password (will be encoded before storage)
+   * @throws UserCredentialsNotFoundException if no credentials exist for the given userId
+   */
   void changePassword(Long userId, String rawNewPassword);
 }

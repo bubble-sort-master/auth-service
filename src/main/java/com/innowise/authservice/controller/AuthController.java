@@ -118,6 +118,14 @@ public class AuthController {
     return ResponseEntity.ok(new TokenValidationResponse(true, userId, role));
   }
 
+  /**
+   * Changes the password for a given user.
+   * <p>Admins can change any user's password; regular users only their own.
+   *
+   * @param userId  ID of the user whose password is being changed
+   * @param request contains the new password
+   * @return HTTP 200 OK on success
+   */
   @PostMapping("/password/{userId}")
   @PreAuthorize(IS_ADMIN_OR_USER_OWNER)
   public ResponseEntity<Void> changePassword(
