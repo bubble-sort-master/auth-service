@@ -24,6 +24,10 @@ public class AuthController {
   private final AuthService authService;
   private final JwtTokenProvider jwtTokenProvider;
 
+  private static final String IS_ADMIN = "hasRole('ADMIN')";
+  private static final String IS_USER_OWNER = "hasRole('USER') and #userId.toString() == authentication.name";
+  private static final String IS_ADMIN_OR_USER_OWNER = IS_ADMIN + " or " + IS_USER_OWNER;
+
   /**
    * Saves user credentials (username, hashed password and role).
    * This endpoint is used during user registration flow  called by API Gateway.
@@ -112,5 +116,15 @@ public class AuthController {
     Long userId = jwtTokenProvider.getUserIdFromToken(token);
     String role = jwtTokenProvider.getRoleFromToken(token);
     return ResponseEntity.ok(new TokenValidationResponse(true, userId, role));
+  }
+
+  @PostMapping("/password/{userId}")
+  @PreAuthorize(IS_ADMIN_OR_USER_OWNER)
+  public ResponseEntity<Void> changePassword(
+          @PathVariable Long userId,
+          @Valid @RequestBody ChangePasswordRequest request) {
+
+    authService.changePassword(userId, request.newPassword());
+    return ResponseEntity.ok().build();
   }
 }

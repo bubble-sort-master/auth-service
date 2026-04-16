@@ -49,4 +49,6 @@ public interface AuthService {
    * @throws UserCredentialsNotFoundException if no credentials found for this userId
    */
   UserCredentials findByUserId(Long userId);
+
+  void changePassword(Long userId, String rawNewPassword);
 }
