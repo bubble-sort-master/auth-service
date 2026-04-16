@@ -46,4 +46,12 @@ public class AuthServiceImpl implements AuthService {
     return credentialsRepository.findByUserId(userId)
             .orElseThrow(() -> new UserCredentialsNotFoundException("Credentials not found for userId: " + userId));
   }
+
+  @Transactional
+  public void changePassword(Long userId, String rawNewPassword) {
+    UserCredentials credentials = findByUserId(userId);
+
+    credentials.setPassword(passwordEncoder.encode(rawNewPassword));
+    credentialsRepository.save(credentials);
+  }
 }
