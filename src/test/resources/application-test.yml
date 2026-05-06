@@ -23,3 +23,10 @@ logging:
   level:
     org.springframework.security: WARN
     org.hibernate.SQL: ERROR
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
