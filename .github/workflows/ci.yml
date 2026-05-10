@@ -94,4 +94,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
