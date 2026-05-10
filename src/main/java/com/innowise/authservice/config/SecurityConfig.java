@@ -38,7 +38,7 @@ public class SecurityConfig {
             .cors(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/register", "/auth/token", "/auth/refresh", "/auth/validate").permitAll()
+                    .requestMatchers("/auth/register", "/auth/token", "/auth/refresh", "/auth/validate", "/actuator/**").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -62,20 +62,11 @@ public class SecurityConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean(JwtEncoder.class)
   public JwtEncoder jwtEncoder() {
     SecretKeySpec secretKey = new SecretKeySpec(
             jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
             "HmacSHA256"
     );
-
-    var jwk = new com.nimbusds.jose.jwk.OctetSequenceKey.Builder(secretKey)
-            .keyID("auth-service-key")
-            .algorithm(com.nimbusds.jose.JWSAlgorithm.HS256)
-            .build();
-
-    var jwkSet = new com.nimbusds.jose.jwk.JWKSet(jwk);
-
-    return new NimbusJwtEncoder(new com.nimbusds.jose.jwk.source.ImmutableJWKSet<>(jwkSet));
+    return NimbusJwtEncoder.withSecretKey(secretKey).build();
   }
 }
